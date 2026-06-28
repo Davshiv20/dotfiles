@@ -18,7 +18,7 @@ fi
 
 for file in CLAUDE.md AGENTS.md; do
   if [ -f "${home_dir}/.claude/${file}" ]; then
-    cp "${home_dir}/.claude/${file}" "${repo_dir}/claude/${file}"
+    cp "${home_dir}/.claude/${file}" "${repo_dir}/${file}"
   fi
 done
 

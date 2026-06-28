@@ -24,7 +24,7 @@ backup_then_link() {
 backup_then_link "${repo_dir}/agents/skills" "${HOME}/.agents/skills"
 backup_then_link "${repo_dir}/claude/skills" "${HOME}/.claude/skills"
 
-[ -f "${repo_dir}/claude/CLAUDE.md" ] && backup_then_link "${repo_dir}/claude/CLAUDE.md" "${HOME}/.claude/CLAUDE.md"
-[ -f "${repo_dir}/claude/AGENTS.md" ] && backup_then_link "${repo_dir}/claude/AGENTS.md" "${HOME}/.claude/AGENTS.md"
+[ -f "${repo_dir}/CLAUDE.md" ] && backup_then_link "${repo_dir}/CLAUDE.md" "${HOME}/.claude/CLAUDE.md"
+[ -f "${repo_dir}/AGENTS.md" ] && backup_then_link "${repo_dir}/AGENTS.md" "${HOME}/.claude/AGENTS.md"
 
 echo "Install complete."

@@ -7,11 +7,11 @@ This repo stores reusable agent instructions and skills so they can be synced ac
 ## What is tracked
 
 ```text
-agents/skills/          -> ~/.agents/skills/
-claude/CLAUDE.md        -> ~/.claude/CLAUDE.md
-claude/AGENTS.md        -> ~/.claude/AGENTS.md
-claude/skills/          -> ~/.claude/skills/
-scripts/install.sh      -> install this repo onto a machine
+AGENTS.md                -> ~/.claude/AGENTS.md
+CLAUDE.md                -> ~/.claude/CLAUDE.md
+agents/skills/           -> ~/.agents/skills/
+claude/skills/           -> ~/.claude/skills/
+scripts/install.sh       -> install this repo onto a machine
 scripts/pull-from-home.sh -> sync current local config back into this repo
 ```
 
@@ -88,10 +88,10 @@ Install/symlink the repo into the expected home-directory locations:
 The install script links:
 
 ```text
+~/Desktop/dotagents/AGENTS.md      -> ~/.claude/AGENTS.md
+~/Desktop/dotagents/CLAUDE.md      -> ~/.claude/CLAUDE.md
 ~/Desktop/dotagents/agents/skills  -> ~/.agents/skills
 ~/Desktop/dotagents/claude/skills  -> ~/.claude/skills
-~/Desktop/dotagents/claude/CLAUDE.md -> ~/.claude/CLAUDE.md
-~/Desktop/dotagents/claude/AGENTS.md -> ~/.claude/AGENTS.md
 ```
 
 If those files/directories already exist, the script backs them up first using a suffix like:
