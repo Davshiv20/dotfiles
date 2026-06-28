@@ -1,0 +1,25 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor/OS noise
+*.swp
+*.swo
+*~
+
+# Secrets and local-only state
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.log
+
+# Claude/Pi runtime state (do not commit)
+claude/cache/
+claude/projects/
+claude/plans/
+claude/todos/
+claude/statsig/
+claude/shell-snapshots/
