@@ -1,0 +1,10 @@
+{
+  "lastChangelogVersion": "0.80.1",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.5",
+  "defaultThinkingLevel": "high",
+  "theme": "cold-neon",
+  "packages": [
+    "npm:@mem0/pi-agent-plugin"
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "pi-extensions",
+  "private": true,
+  "dependencies": {
+    "@mem0/pi-agent-plugin": "^0.1.2"
+  }
+}
