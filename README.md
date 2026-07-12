@@ -14,6 +14,7 @@ claude/skills/             -> ~/.claude/skills/
 claude/output-styles/      -> ~/.claude/output-styles/
 claude/settings.json       -> ~/.claude/settings.json
 claude/statusline.sh       -> ~/.claude/statusline.sh
+claude/ai-agent-status.sh  -> ~/.claude/ai-agent-status.sh
 pi/extensions/             -> ~/.pi/agent/extensions/
 pi/themes/                 -> ~/.pi/agent/themes/
 pi/settings.json           -> ~/.pi/agent/settings.json
@@ -75,6 +76,21 @@ Then push if a remote has been configured:
 ```sh
 git push
 ```
+
+### Cross-runtime agent visibility
+
+The Claude Code status line always includes a live summary for Claude Code,
+Codex, Hermes, and Pi agents, for example:
+
+```text
+ai claude 7 (2 waiting) · codex 1 · hermes 2 · pi 3
+```
+
+Claude Code supplies structured working/waiting status through
+`claude agents --json`; completed Claude background jobs are excluded. Codex,
+Hermes, and Pi expose process counts because their CLIs do not currently offer
+an equivalent active-agent JSON endpoint. Hermes infrastructure processes such
+as the gateway, dashboard, and proxy are excluded.
 
 ## Installing on a new laptop
 

@@ -57,6 +57,10 @@ esac
 cost=$(awk "BEGIN { printf \"%.2f\", ($total_input * $price_in + $total_output * $price_out) / 1000000 }")
 cost_seg="\$${cost}"
 
+# --- segment 7: cross-runtime AI agent status ---
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+agent_seg=$(bash "${script_dir}/ai-agent-status.sh" 2>/dev/null || printf 'ai agents ?')
+
 # --- ANSI helpers ---
 DIM="\033[2m"
 RESET="\033[0m"
@@ -66,7 +70,7 @@ SEP="${DIM} │ ${RESET}"
 parts=("$dir")
 [ -n "$branch" ] && parts+=("$branch")
 [ -n "$model_short" ] && parts+=("$model_short")
-parts+=("$ctx_seg" "$tok_seg" "$cost_seg")
+parts+=("$ctx_seg" "$tok_seg" "$cost_seg" "$agent_seg")
 
 out=""
 for part in "${parts[@]}"; do
