@@ -1,4 +1,4 @@
-# dotagents
+# dotfiles
 
 Personal, version-controlled configuration for AI coding agents.
 
@@ -7,12 +7,19 @@ This repo stores reusable agent instructions and skills so they can be synced ac
 ## What is tracked
 
 ```text
-agents/skills/          -> ~/.agents/skills/
-claude/CLAUDE.md        -> ~/.claude/CLAUDE.md
-claude/AGENTS.md        -> ~/.claude/AGENTS.md
-claude/skills/          -> ~/.claude/skills/
-scripts/install.sh      -> install this repo onto a machine
-scripts/pull-from-home.sh -> sync current local config back into this repo
+AGENTS.md                  -> ~/.claude/AGENTS.md
+CLAUDE.md                  -> ~/.claude/CLAUDE.md
+agents/skills/             -> ~/.agents/skills/
+claude/skills/             -> ~/.claude/skills/
+claude/output-styles/      -> ~/.claude/output-styles/
+claude/settings.json       -> ~/.claude/settings.json
+claude/statusline.sh       -> ~/.claude/statusline.sh
+pi/extensions/             -> ~/.pi/agent/extensions/
+pi/themes/                 -> ~/.pi/agent/themes/
+pi/settings.json           -> ~/.pi/agent/settings.json
+pi/npm/package*.json       -> ~/.pi/agent/npm/package*.json
+scripts/install.sh         -> install this repo onto a machine
+scripts/pull-from-home.sh  -> sync current local config back into this repo
 ```
 
 ## What is intentionally not tracked
@@ -34,7 +41,7 @@ See `.gitignore` for the exact rules.
 The repo lives at:
 
 ```sh
-~/Desktop/dotagents
+~/Desktop/dotfiles
 ```
 
 It is a normal git repo. The initial commit has already been created locally.
@@ -44,7 +51,7 @@ It has **not** been pushed yet unless you add a remote and push it yourself.
 Check with:
 
 ```sh
-cd ~/Desktop/dotagents
+cd ~/Desktop/dotfiles
 git remote -v
 git status --short --branch
 ```
@@ -56,7 +63,7 @@ If `git remote -v` prints nothing, no remote exists yet.
 After editing skills or Claude/agent instructions in your normal home locations, sync them into this repo:
 
 ```sh
-cd ~/Desktop/dotagents
+cd ~/Desktop/dotfiles
 ./scripts/pull-from-home.sh
 git diff
 git add .
@@ -75,8 +82,8 @@ Clone the repo somewhere, for example:
 
 ```sh
 cd ~/Desktop
-git clone <YOUR_REPO_URL> dotagents
-cd dotagents
+git clone <YOUR_REPO_URL> dotfiles
+cd dotfiles
 ```
 
 Install/symlink the repo into the expected home-directory locations:
@@ -88,10 +95,10 @@ Install/symlink the repo into the expected home-directory locations:
 The install script links:
 
 ```text
-~/Desktop/dotagents/agents/skills  -> ~/.agents/skills
-~/Desktop/dotagents/claude/skills  -> ~/.claude/skills
-~/Desktop/dotagents/claude/CLAUDE.md -> ~/.claude/CLAUDE.md
-~/Desktop/dotagents/claude/AGENTS.md -> ~/.claude/AGENTS.md
+~/Desktop/dotfiles/AGENTS.md      -> ~/.claude/AGENTS.md
+~/Desktop/dotfiles/CLAUDE.md      -> ~/.claude/CLAUDE.md
+~/Desktop/dotfiles/agents/skills  -> ~/.agents/skills
+~/Desktop/dotfiles/claude/skills  -> ~/.claude/skills
 ```
 
 If those files/directories already exist, the script backs them up first using a suffix like:
@@ -107,7 +114,7 @@ After installation, edits made in `~/.agents/skills`, `~/.claude/skills`, `~/.cl
 Create an empty GitHub repo, then run:
 
 ```sh
-cd ~/Desktop/dotagents
+cd ~/Desktop/dotfiles
 git remote add origin git@github.com:<USERNAME>/<REPO>.git
 git push -u origin main
 ```
@@ -124,7 +131,7 @@ Recommended: keep this repo private unless you are sure none of your prompts or 
 ## Safety checklist before pushing
 
 ```sh
-cd ~/Desktop/dotagents
+cd ~/Desktop/dotfiles
 git status --short
 rg -n --hidden -i '(api[_-]?key|secret|token|password|private key|sk-[A-Za-z0-9])' --glob '!.git/**' .
 ```
