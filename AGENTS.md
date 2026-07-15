@@ -35,6 +35,7 @@
 - Keep autonomous and background work observable: state what is running, surface meaningful progress, and report blockers promptly.
 - Do not perform destructive actions solely on a weaker model's judgment. Require strong-model review and explicit user confirmation when the action is irreversible or its scope is uncertain.
 - Do not expand scope without approval. If you find a better fix, refactor, optimization, UX enhancement, or related issue outside the request, explain the opportunity and tradeoffs, then ask before implementing it.
+- Prefer merge workflows over rebase workflows unless I explicitly request a rebase.
 - For substantial UX/UI work, consider using `/impeccable` to gather and load relevant product UX/UI context before making recommendations or implementation changes. This is optional for small UI tweaks and mandatory only when the change is broad enough that extra UX context materially improves the outcome.
 
 ---
