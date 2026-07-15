@@ -1,15 +1,19 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { execFile } from "node:child_process";
 import { createReadStream } from "node:fs";
 import { readdir, stat } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join, relative } from "node:path";
 import { createInterface } from "node:readline";
+import { promisify } from "node:util";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const WINDOWS = [1, 7, 30, 90] as const;
 const PI_SESSION_DIR = join(homedir(), ".pi", "agent", "sessions");
 const CODEX_SESSION_DIR = join(homedir(), ".codex", "sessions");
+const HERMES_STATE_DB = join(homedir(), ".hermes", "state.db");
 const MODELS_DEV_URL = "https://models.dev";
+const execFileAsync = promisify(execFile);
 
 type WindowDays = (typeof WINDOWS)[number];
 
@@ -59,6 +63,21 @@ type CodexEvent = {
 	timestamp?: unknown;
 	type?: unknown;
 	payload?: unknown;
+};
+
+type HermesUsageRow = {
+	session_id?: unknown;
+	model?: unknown;
+	billing_provider?: unknown;
+	billing_mode?: unknown;
+	api_call_count?: unknown;
+	input_tokens?: unknown;
+	output_tokens?: unknown;
+	cache_read_tokens?: unknown;
+	cache_write_tokens?: unknown;
+	reasoning_tokens?: unknown;
+	estimated_cost_usd?: unknown;
+	timestamp?: unknown;
 };
 
 const emptyUsage = (): Usage => ({
@@ -324,6 +343,80 @@ const collectCodexUsage = async (nowMs: number, prices: PriceBook): Promise<Accu
 	return acc;
 };
 
+const collectHermesUsage = async (nowMs: number, prices: PriceBook): Promise<Accumulators> => {
+	const acc = emptyAccumulators();
+	const cutoffSeconds = Math.floor((nowMs - 90 * DAY_MS) / 1000);
+	const sql = `
+WITH usage_rows AS (
+	SELECT
+		u.session_id AS session_id,
+		COALESCE(NULLIF(u.model, ''), NULLIF(s.model, ''), 'unknown') AS model,
+		COALESCE(NULLIF(u.billing_provider, ''), NULLIF(s.billing_provider, ''), 'unknown') AS billing_provider,
+		COALESCE(NULLIF(u.billing_mode, ''), NULLIF(s.billing_mode, ''), '') AS billing_mode,
+		COALESCE(u.api_call_count, 0) AS api_call_count,
+		COALESCE(u.input_tokens, 0) AS input_tokens,
+		COALESCE(u.output_tokens, 0) AS output_tokens,
+		COALESCE(u.cache_read_tokens, 0) AS cache_read_tokens,
+		COALESCE(u.cache_write_tokens, 0) AS cache_write_tokens,
+		COALESCE(u.reasoning_tokens, 0) AS reasoning_tokens,
+		COALESCE(u.estimated_cost_usd, 0) AS estimated_cost_usd,
+		COALESCE(u.last_seen, u.first_seen, s.ended_at, s.started_at) AS timestamp
+	FROM session_model_usage u
+	LEFT JOIN sessions s ON s.id = u.session_id
+	UNION ALL
+	SELECT
+		s.id AS session_id,
+		COALESCE(NULLIF(s.model, ''), 'unknown') AS model,
+		COALESCE(NULLIF(s.billing_provider, ''), 'unknown') AS billing_provider,
+		COALESCE(NULLIF(s.billing_mode, ''), '') AS billing_mode,
+		COALESCE(s.api_call_count, 0) AS api_call_count,
+		COALESCE(s.input_tokens, 0) AS input_tokens,
+		COALESCE(s.output_tokens, 0) AS output_tokens,
+		COALESCE(s.cache_read_tokens, 0) AS cache_read_tokens,
+		COALESCE(s.cache_write_tokens, 0) AS cache_write_tokens,
+		COALESCE(s.reasoning_tokens, 0) AS reasoning_tokens,
+		COALESCE(s.estimated_cost_usd, 0) AS estimated_cost_usd,
+		COALESCE(s.ended_at, s.started_at) AS timestamp
+	FROM sessions s
+	WHERE NOT EXISTS (SELECT 1 FROM session_model_usage u WHERE u.session_id = s.id)
+)
+SELECT * FROM usage_rows
+WHERE timestamp >= ${cutoffSeconds}
+  AND (api_call_count > 0 OR input_tokens > 0 OR output_tokens > 0 OR cache_read_tokens > 0 OR cache_write_tokens > 0 OR reasoning_tokens > 0)
+`;
+	let rows: HermesUsageRow[] = [];
+	try {
+		const { stdout } = await execFileAsync("sqlite3", ["-json", HERMES_STATE_DB, sql], { maxBuffer: 10 * 1024 * 1024 });
+		const parsed = JSON.parse(stdout || "[]") as unknown;
+		if (Array.isArray(parsed)) rows = parsed.filter(isRecord) as HermesUsageRow[];
+	} catch {
+		return acc;
+	}
+	for (const row of rows) {
+		const timestampSeconds = asNumber(row.timestamp);
+		if (!timestampSeconds) continue;
+		const provider = String(row.billing_provider ?? "unknown");
+		const rawModel = String(row.model ?? "unknown");
+		const model = rawModel.includes("/") ? rawModel : `${provider}/${rawModel}`;
+		const input = asNumber(row.input_tokens);
+		const cachedInput = asNumber(row.cache_read_tokens);
+		const output = asNumber(row.output_tokens);
+		const reasoningOutput = asNumber(row.reasoning_tokens);
+		const delta = {
+			input,
+			cachedInput,
+			output,
+			reasoningOutput,
+			total: input + cachedInput + output + asNumber(row.cache_write_tokens),
+			cost: asNumber(row.estimated_cost_usd),
+			turns: asNumber(row.api_call_count) || 1,
+		};
+		if (!delta.cost) delta.cost = costFromPrice(delta, findPrice(prices, model));
+		addToWindows(acc, timestampSeconds * 1000, nowMs, model, delta, String(row.session_id ?? "hermes"));
+	}
+	return acc;
+};
+
 const combineUsage = (left: Usage, right: Usage): Usage => {
 	const combined = emptyUsage();
 	addUsage(combined, left, "");
@@ -370,12 +463,12 @@ const renderTopModels = (usage: Usage): string => {
 	return rows.length > 0 ? rows.join("\n") : "  - none";
 };
 
-const buildReport = (piUsage: Accumulators, codexUsage: Accumulators, generatedAt: Date, priceLookup: PriceLookup): string => {
+const buildReport = (piUsage: Accumulators, codexUsage: Accumulators, hermesUsage: Accumulators, generatedAt: Date, priceLookup: PriceLookup): string => {
 	const lines = [
 		"# Usage Report",
 		`Generated: ${generatedAt.toISOString()}`,
 		"",
-		`Costs are exact for pi sessions when pi stored provider cost data. Codex costs are estimated from ${priceLookup.source}.`,
+		`Costs are exact for pi sessions when pi stored provider cost data. Hermes token usage is read from ~/.hermes/state.db; Hermes costs use stored estimates when present, otherwise ${priceLookup.source}. Codex costs are estimated from ${priceLookup.source}.`,
 		...(priceLookup.warning ? [`Pricing warning: ${priceLookup.warning}`] : []),
 		"",
 		"| Window | Source | Sessions | Turns | Input | Cached input | Output | Reasoning output | Total | Cost |",
@@ -383,15 +476,16 @@ const buildReport = (piUsage: Accumulators, codexUsage: Accumulators, generatedA
 	];
 
 	for (const days of WINDOWS) {
-		const total = combineUsage(piUsage[days], codexUsage[days]);
+		const total = combineUsage(combineUsage(piUsage[days], codexUsage[days]), hermesUsage[days]);
 		lines.push(renderUsageLine(`${days}d`, "total", total));
 		lines.push(renderUsageLine(`${days}d`, "pi", piUsage[days]));
 		lines.push(renderUsageLine(`${days}d`, "codex", codexUsage[days]));
+		lines.push(renderUsageLine(`${days}d`, "hermes", hermesUsage[days]));
 	}
 
 	lines.push("", "## Top Models", "");
 	for (const days of WINDOWS) {
-		lines.push(`### ${days} days`, renderTopModels(combineUsage(piUsage[days], codexUsage[days])), "");
+		lines.push(`### ${days} days`, renderTopModels(combineUsage(combineUsage(piUsage[days], codexUsage[days]), hermesUsage[days])), "");
 	}
 
 	lines.push(
@@ -401,7 +495,7 @@ const buildReport = (piUsage: Accumulators, codexUsage: Accumulators, generatedA
 		"",
 		"Cached input and reasoning output are not always broken out by models.dev. When no separate cached-input price is published, `/usage` prices cached input at the normal input rate; when no separate reasoning-output price is published, it prices reasoning output at the normal output rate.",
 		"",
-		"If a Codex model id is absent from models.dev or the lookup fails, that Codex cost remains `n/a`.",
+		"If a Codex or Hermes model id is absent from models.dev and no stored nonzero provider cost exists, that cost remains `n/a`.",
 	);
 
 	return lines.join("\n");
@@ -409,16 +503,17 @@ const buildReport = (piUsage: Accumulators, codexUsage: Accumulators, generatedA
 
 export default function (pi: ExtensionAPI) {
 	pi.registerCommand("usage", {
-		description: "Show pi and Codex token usage and cost reports for 1/7/30/90 days",
+		description: "Show pi, Codex, and Hermes token usage and cost reports for 1/7/30/90 days",
 		handler: async (_args, ctx) => {
 			if (ctx.hasUI) ctx.ui.notify("Building usage report...", "info");
 			const now = new Date();
 			const priceLookup = await loadPriceLookup();
-			const [piUsage, codexUsage] = await Promise.all([
+			const [piUsage, codexUsage, hermesUsage] = await Promise.all([
 				collectPiUsage(now.getTime()),
 				collectCodexUsage(now.getTime(), priceLookup.prices),
+				collectHermesUsage(now.getTime(), priceLookup.prices),
 			]);
-			const report = buildReport(piUsage, codexUsage, now, priceLookup);
+			const report = buildReport(piUsage, codexUsage, hermesUsage, now, priceLookup);
 			pi.sendMessage({
 				customType: "usage-report",
 				content: report,
@@ -428,6 +523,7 @@ export default function (pi: ExtensionAPI) {
 					priceWarning: priceLookup.warning,
 					pi: Object.fromEntries(WINDOWS.map((days) => [days, flatten(piUsage[days])])),
 					codex: Object.fromEntries(WINDOWS.map((days) => [days, flatten(codexUsage[days])])),
+					hermes: Object.fromEntries(WINDOWS.map((days) => [days, flatten(hermesUsage[days])])),
 				},
 			});
 		},

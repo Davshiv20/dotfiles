@@ -1,10 +1,55 @@
 {
-  "lastChangelogVersion": "0.80.1",
+  "lastChangelogVersion": "0.80.6",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "high",
+  "defaultThinkingLevel": "low",
+  "subagents": {
+    "defaultModel": "openai-codex/gpt-5.6-sol",
+    "modelScope": {
+      "enforce": true,
+      "allow": [
+        "openai-codex/*"
+      ]
+    },
+    "agentOverrides": {
+      "scout": {
+        "model": "openai-codex/gpt-5.5",
+        "thinking": "medium"
+      },
+      "researcher": {
+        "model": "openai-codex/gpt-5.4-mini",
+        "thinking": "medium"
+      },
+      "planner": {
+        "model": "openai-codex/gpt-5.6-terra",
+        "thinking": "high"
+      },
+      "worker": {
+        "model": "openai-codex/gpt-5.5",
+        "thinking": "high"
+      },
+      "reviewer": {
+        "model": "openai-codex/gpt-5.6-terra",
+        "thinking": "high"
+      },
+      "context-builder": {
+        "model": "openai-codex/gpt-5.4-mini",
+        "thinking": "medium"
+      },
+      "oracle": {
+        "model": "openai-codex/gpt-5.6-sol",
+        "thinking": "high"
+      },
+      "delegate": {
+        "model": "openai-codex/gpt-5.4-mini",
+        "thinking": "medium"
+      }
+    }
+  },
   "theme": "cold-neon",
   "packages": [
-    "npm:@mem0/pi-agent-plugin"
+    "npm:@mem0/pi-agent-plugin",
+    "git:github.com/unravel-team/thing",
+    "npm:pi-subagents"
   ]
 }
