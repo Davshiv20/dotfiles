@@ -17,6 +17,16 @@ Use this skill when writing or editing a pull request title or body.
 - Do not mention intermediate PR details, refactor history, commit-by-commit changes, or PR-size reductions.
 - Use code references when helpful.
 
+## Writing style
+
+- Use simple, direct language.
+- Say what changed and why it matters.
+- Use short sentences and everyday words.
+- Avoid AI-style filler, hype, buzzwords, and marketing language.
+- Avoid technical jargon when plain words work.
+- If a technical term is necessary, explain it in one short sentence.
+- Remove any sentence that does not help the reader understand the change.
+
 ## Preferred content
 
 Favor concrete artifacts over prose:
