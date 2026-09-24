@@ -67,7 +67,63 @@ description: >-
 
   ## Brand layer
 
-  Default to project AGENTS.md values. Fall back to these:
+  ### EffiScale / Trellis preferred engineering-doc style
+
+  When producing EffiScale or Trellis engineering reference docs, use the visual system from
+  `docs/buyer-agent-architecture.html` as the default, unless the user asks for a different look.
+
+  Preferred traits:
+
+  - Editorial architecture-doc feel, not a generic SaaS landing page.
+  - Light/dark compatible CSS variables with `prefers-color-scheme`.
+  - Serif body copy with crisp sans headings:
+    - **Archivo** for h1/h2/h3 and UI labels.
+    - **Source Serif 4** for body prose.
+    - **JetBrains Mono** for IDs, code, facts, section marks, and table labels.
+    - **Caveat** only for hand-labeled dashed containers.
+  - Page shell: `.shell`, `.masthead`, `.standfirst`, `.facts`, `.status-callout`.
+  - Section header pattern: `.sec-head` with a monospace `.sec-mark` and bordered underline.
+  - Architecture diagrams made from `.arch-card`, `.diagram`, `.node`, `.flow-lane`, `.flow`, `.exco-cont`, `.cont-label`, `.control-stack`, and `.control-step`.
+  - Implementation sequences use `.sequence` cards with arrow separators.
+  - Decision/reference material uses `.rules`, `.rule`, `.scroll table`, `.chip`, `.truth-grid`, and `.gaps`.
+  - Use dashed containers to show ownership boundaries, e.g. “Backend authority”, “Trellis Computer”, or “BuyerMailService”.
+  - Avoid drop shadows and glossy cards; prefer hard borders, muted paper backgrounds, and diagrammatic spacing.
+
+  Preferred font link:
+
+  ```html
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;500;700&family=Caveat:wght@400;600;700&display=swap">
+  ```
+
+  Preferred CSS variable base:
+
+  ```css
+  :root {
+    --paper:#F1F3F5; --surface:#FFFFFF; --surface-2:#E8ECEF;
+    --ink:#0F1519; --ink-2:#2C3A42; --muted:#5A666D;
+    --rule:#D3DBE0; --rule-firm:#A9B7BF;
+    --accent:#0E5A6B; --accent-dim:#E0EDF0;
+    --amber:#8A5300; --amber-dim:#F5EADA;
+    --danger:#8E3227; --danger-dim:#F7E6E3;
+    --good:#1F6045; --good-dim:#E1F0E9;
+    --measure:68ch;
+    --step--1:.812rem; --step-0:1rem; --step-1:1.22rem;
+    --step-2:1.55rem; --step-3:2.1rem; --step-4:2.95rem;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --paper:#0D1316; --surface:#141C20; --surface-2:#1B252A;
+    --ink:#E3EAEE; --ink-2:#B7C4CA; --muted:#8B999F;
+    --rule:#253136; --rule-firm:#3C4C53;
+    --accent:#4FBFD4; --accent-dim:#12313A;
+    --amber:#D69A3C; --amber-dim:#2E2312;
+    --danger:#E08072; --danger-dim:#331915;
+    --good:#63C39A; --good-dim:#183128;
+  }}
+  ```
+
+  For non-EffiScale/Trellis docs, default to project AGENTS.md values. Fall back to these:
 
   ```css
   :root {
