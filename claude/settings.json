@@ -1,12 +1,87 @@
 {
-  "model": "claude-fable-5[1m]",
+  "model": "opus",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/tablo/locate.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/apple/.claude/tablo/locate.sh"
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
-    "command": "bash /Users/apple/.claude/statusline.sh"
+    "command": "/Users/apple/.ai-usage/claude-statusline.sh",
+    "refreshInterval": 5
+  },
+  "enabledPlugins": {
+    "ponytail@ponytail": true
+  },
+  "extraKnownMarketplaces": {
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
+    }
   },
   "outputStyle": "Honest Critic",
-  "effortLevel": "medium",
+  "effortLevel": "high",
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "medium"
+    },
+    "claude-sonnet-5": {
+      "effortLevel": "medium"
+    },
+    "claude-opus-5-5": {
+      "effortLevel": "medium"
+    }
+  },
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
-  "theme": "dark"
+  "theme": "dark",
+  "agentPushNotifEnabled": true,
+  "autoMode": {
+    "environment": [
+      "### Org-wide",
+      "**Organization**: None configured",
+      "**Cloud provider(s)**: None configured",
+      "**Repository visibility**: Private — EffiScale-Elara/trellis (confirmed via gh)",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: Provider credentials for Pi authenticated via Pi's own auth store or provider API-key env vars; no secrets committed to this repo (.env is gitignored, .env.sample documents non-secret defaults only)",
+      "**Default / protected branches**: main (default). No rulesets or classic branch protection listed via gh — treat main as unprotected for the purposes of soft-deny scoping",
+      "**CI/CD deploy targets**: None configured",
+      "**Network posture**: None configured",
+      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine with open internet",
+      "**Source control**: The trusted repo (EffiScale-Elara/trellis on github.com) and its origin remote only",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: None configured",
+      "**Internal package registry**: registry.npmjs.org (default public npm registry, contacted routinely during this project's dependency installs — not an org-internal registry)",
+      "**Sensitive data locations & audiences**: .env and .env.sample-adjacent files across the repo and worktrees (.claude/worktrees/docsfix/.env, .claude/worktrees/docsfix/.env.sample, .claude/worktrees/docsfix/.envrc, .claude/worktrees/restack276/.env.sample, .claude/worktrees/restack276/.envrc, ./.env, ./.env.sample, ./.envrc) — local dev config, may hold provider API keys; local dev only, generated fictional data, no real customer data per README",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any namespace, host, or container whose name carries prod or production as a whole word or name segment (default heuristic — no prod-named k8s namespaces or hosts observed in this project's recent usage)",
+      "**Protected deployment namespaces / environments**: None configured — fall back to the Sensitive remote targets heuristic",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, and node-pool resources; anything whose name or tag carries prod or production as a whole word or name segment",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development (FastAPI/SQLite control plane, Next.js UI, supervised Pi agents — Trellis project)",
+      "**Trusted repo**: /Users/apple/Desktop/clients/effiscale/apps/trellis (EffiScale-Elara/trellis, private, origin remote on github.com)",
+      "**Org-specific CLIs**: uv (Python package manager, used routinely — 48× this project, 4× shell history), bun/bunx (Node/TS toolchain per CLAUDE.md), make (project task runner — 210× shell history), fly/flyctl (deployment CLI, seen in shell history but no deploy target configured)",
+      "routine under /Users/apple/Desktop/clients/effiscale/apps/trellis/ prefix: make targets (build, check, dev, dev-backend, dev-frontend, e2e*, data-*), uv, bun/bunx commands"
+    ]
+  }
 }

@@ -1,0 +1,8 @@
+[user]
+	name = davshiv20
+	email = shivamdave2903@gmail.com
+	signingkey = /Users/apple/.ssh/id_ed25519.pub
+[gpg]
+	format = ssh
+[commit]
+	gpgsign = true

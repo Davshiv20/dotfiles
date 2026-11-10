@@ -1,12 +1,10 @@
----
-name: htmlify
-description: >-
-  Render an engineering planning document (RFC, scaling plan, design review,
-  postmortem, audit) as a single self-contained HTML file. Use when the input
-  is a structured set of findings + decisions and the audience is reviewers
-  who will read it cold in a browser tab. Output is one file with inline CSS,
-  Google Fonts via CDN, no JavaScript dependency.
----
+  ---
+  name: htmlify
+  description: Render an engineering planning document (RFC, scaling plan, design review, postmortem, audit) as a
+  single self-contained HTML file. Use when the input is a structured set of findings + decisions and the audience is
+  reviewers who will read it cold in a browser tab. Output is one file with inline CSS, Google Fonts via CDN, no
+  JavaScript dependency.
+  ---
 
   # htmlify 
 

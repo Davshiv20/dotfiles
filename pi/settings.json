@@ -1,8 +1,8 @@
 {
-  "lastChangelogVersion": "0.80.6",
+  "lastChangelogVersion": "1.5.0",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.5",
-  "defaultThinkingLevel": "low",
+  "defaultThinkingLevel": "medium",
   "subagents": {
     "defaultModel": "openai-codex/gpt-5.6-sol",
     "modelScope": {
@@ -50,6 +50,15 @@
   "packages": [
     "npm:@mem0/pi-agent-plugin",
     "git:github.com/unravel-team/thing",
-    "npm:pi-subagents"
-  ]
+    "npm:pi-subagents",
+    "git:github.com/unravel-team/pi-adr",
+    "npm:@hypabolic/pi-hypa",
+    "git:github.com/DietrichGebert/ponytail"
+  ],
+  "defaultTools": [
+    "+codemode"
+  ],
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-subagents\",\"scope\":\"user\"}": "0.84.0"
+  }
 }

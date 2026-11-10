@@ -2,7 +2,8 @@
   "name": "pi-extensions",
   "private": true,
   "dependencies": {
-    "@mem0/pi-agent-plugin": "^0.1.2",
-    "pi-subagents": "^0.34.0"
+    "@hypabolic/pi-hypa": "^1.2.0",
+    "@mem0/pi-agent-plugin": "^0.3.2",
+    "pi-subagents": "^0.84.0"
   }
 }

@@ -26,8 +26,6 @@ backup_then_link "${repo_dir}/agents/skills" "${HOME}/.agents/skills"
 backup_then_link "${repo_dir}/claude/skills" "${HOME}/.claude/skills"
 backup_then_link "${repo_dir}/claude/output-styles" "${HOME}/.claude/output-styles"
 backup_then_link "${repo_dir}/claude/settings.json" "${HOME}/.claude/settings.json"
-backup_then_link "${repo_dir}/claude/statusline.sh" "${HOME}/.claude/statusline.sh"
-backup_then_link "${repo_dir}/claude/ai-agent-status.sh" "${HOME}/.claude/ai-agent-status.sh"
 backup_then_link "${repo_dir}/CLAUDE.md" "${HOME}/.claude/CLAUDE.md"
 backup_then_link "${repo_dir}/AGENTS.md" "${HOME}/.claude/AGENTS.md"
 backup_then_link "${repo_dir}/pi/extensions" "${HOME}/.pi/agent/extensions"
@@ -35,5 +33,18 @@ backup_then_link "${repo_dir}/pi/themes" "${HOME}/.pi/agent/themes"
 backup_then_link "${repo_dir}/pi/settings.json" "${HOME}/.pi/agent/settings.json"
 backup_then_link "${repo_dir}/pi/npm/package.json" "${HOME}/.pi/agent/npm/package.json"
 backup_then_link "${repo_dir}/pi/npm/package-lock.json" "${HOME}/.pi/agent/npm/package-lock.json"
+
+while IFS= read -r -d '' repo_file; do
+  backup_then_link "${repo_file}" "${HOME}/${repo_file#"${repo_dir}/home/"}"
+done < <(find "${repo_dir}/home" -type f -print0)
+
+# Secrets are never tracked; keep the sourced file present so it's obvious where they go.
+[ -e "${HOME}/.zshrc.local" ] || install -m 600 /dev/null "${HOME}/.zshrc.local"
+
+if command -v brew >/dev/null 2>&1; then
+  brew bundle install --file="${repo_dir}/Brewfile"
+else
+  echo "Homebrew not found: install it, then run: brew bundle install --file=${repo_dir}/Brewfile"
+fi
 
 echo "Install complete."

@@ -1,0 +1,3 @@
+[install]
+# Units are in seconds
+minimumReleaseAge = 604800
