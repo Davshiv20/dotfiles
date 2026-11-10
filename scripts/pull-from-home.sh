@@ -15,6 +15,7 @@ home_files=(
   .config/zed/settings.json
   .config/zed/keymap.json
   .ai-usage/claude-statusline.sh
+  .claude/statusline.sh
 )
 
 # Known token shapes plus generic KEY=longvalue assignments. Secrets belong in

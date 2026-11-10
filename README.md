@@ -12,7 +12,7 @@ claude/output-styles/      -> ~/.claude/output-styles/
 agents/skills/             -> ~/.agents/skills/
 pi/                        -> ~/.pi/agent/ (extensions, themes, settings, npm)
 home/<path>                -> ~/<path>  (.zshrc, .gitconfig, .tmux.conf, .bunfig.toml,
-                                         git ignore, uv, zed, Claude statusline)
+                                         git ignore, uv, zed, .claude/statusline.sh)
 Brewfile                   -> brew formulae, casks, VS Code extensions,
                               uv tools, global npm packages
 ```
